@@ -12,9 +12,11 @@ import java.util.List;
 @RequestMapping("/api/tables")
 public class TableController {
 
+    private final TableService tableService;
     @Autowired
-    private TableService tableService;
-
+    public TableController(TableService tableService) {
+        this.tableService = tableService;
+    }
     @GetMapping
     public ResponseEntity<List<Table>> getAllTables() {
         return ResponseEntity.ok(tableService.getAllTables());
@@ -22,26 +24,27 @@ public class TableController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Table> getTableById(@PathVariable Long id) {
-        return tableService.getTableByid(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFund().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<Table> creatTable(@RequestBody Table table) {
-        return ResponseEntity.ok(tableService.createTable(table));
-    }
-
-    @PutMapping("/{id")
-    public ResponseEntity<Table> updateTable(@PathVariable Long id, @RequestBody Table table) {
-        return tableServiceupdateTable(id, table)
+        return tableService.getTableById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id")
+    @PostMapping
+    public ResponseEntity<Table> creatTable(@RequestBody Table table) {
+        Table createTable = tableService.createTable(table);
+        return ResponseEntity.ok(createTable);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Table> updateTable(@PathVariable Long id, @RequestBody Table table) {
+        return tableService.updateTable(id, table)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTable(@PathVariable Long id) {
-        if (tableService.deletTable(id)) {
+        if (tableService.deleteTable(id)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
